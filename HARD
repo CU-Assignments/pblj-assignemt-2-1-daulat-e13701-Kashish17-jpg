@@ -1,0 +1,39 @@
+import java.util.*;
+class TicketBookingSystem {
+private Set<Integer> bookedSeats = new HashSet<>();
+public synchronized boolean bookSeat(int seatNumber, String user) {
+if (bookedSeats.contains(seatNumber)) {
+System.out.println(user + " - Seat " + seatNumber + " is already booked.");
+return false;
+} else {
+bookedSeats.add(seatNumber);
+System.out.println(user + " successfully booked Seat " + seatNumber);
+return true;
+}
+}
+}
+class BookingThread extends Thread {
+private TicketBookingSystem system;
+private int seatNumber;
+private String user;
+public BookingThread(TicketBookingSystem system, int seatNumber, String user, int priority) {
+this.system = system;
+this.seatNumber = seatNumber;
+this.user = user;
+this.setPriority(priority);
+}
+public void run() {
+system.bookSeat(seatNumber, user);
+}
+}
+public class TicketBooking {
+public static void main(String[] args) {
+TicketBookingSystem system = new TicketBookingSystem();
+BookingThread user1 = new BookingThread(system, 1, "User1", Thread.MIN_PRIORITY);
+BookingThread vipUser = new BookingThread(system, 1, "VIPUser", Thread.MAX_PRIORITY);
+BookingThread user2 = new BookingThread(system, 2, "User2", Thread.NORM_PRIORITY);
+vipUser.start(); // VIP user gets priority
+user1.start();
+user2.start();
+}
+}
